@@ -1,22 +1,8 @@
-# TIBE PHOTO & VIDEO STUDIO — v4
-
-A responsive static website with a browser-based 3×4 cm passport photo crop/resizer.
-
-## Deploy on GitHub Pages
-1. Open your repository: `tibeman/tibe-photo-video-studio`.
-2. Upload and replace the files from this ZIP in the repository root.
-3. Commit the changes to the `main` branch.
-4. Wait a short time, then refresh the published GitHub Pages site.
-
-## Passport photo tool
-- Select a JPG/PNG photo.
-- Adjust zoom and horizontal/vertical crop position.
-- Download a 354×472 PNG.
-- Approximate print size is 3×4 cm when printed at 300 DPI.
-- It does not automatically remove backgrounds, alter faces, or certify official passport-photo rules.
-- The image is processed in the browser and is not uploaded by this tool.
-
-## Important limitations
-GitHub Pages hosts static files only. The admin page is a local demo, not secure authentication or a shared database. Do not store passwords, private customer photos, or API keys in this repository. Real AI processing, secure customer uploads, bookings database and protected admin tools need a backend and may incur costs.
-
-External demos are linked for convenience; their availability, licenses, privacy terms and commercial-use permissions are controlled by their providers.
+# TIBE PHOTO & VIDEO STUDIO — v5
+Includes a browser-based 3×4 cm passport cropper and A4 sheet generator with 35 repeated copies.
+- Upload a photo, adjust zoom and crop, download one 354×472 PNG.
+- Download an A4 2480×3508 PNG with 35 copies, arranged 5 columns × 7 rows.
+- For approximate 3×4 cm print size, print at 300 DPI and use A4 / Actual Size (100%). Check local passport rules.
+- The site does NOT automatically remove backgrounds. Use the linked external background-removal service, download the result, then upload it into the passport maker.
+- Photos are processed in the browser by this tool.
+- GitHub Pages is static hosting. The admin page is a local demo, not secure authentication or shared database. Never put passwords, private customer images or API keys in the repository.

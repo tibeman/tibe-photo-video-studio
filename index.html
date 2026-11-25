@@ -1,83 +1,36 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101010">
-  <title>TIBE PHOTO & VIDEO STUDIO</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101010">
+<title>TIBE PHOTO & VIDEO STUDIO</title><link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="site-header">
-  <a class="brand" href="#"><span class="brand-mark">T</span><span>TIBE <small>PHOTO & VIDEO STUDIO</small></span></a>
-  <nav><a href="#services">Services</a><a href="#passport">Passport Maker</a><a href="#gallery">Gallery</a><a href="#contact">Contact</a></nav>
+<a class="brand" href="#"><span class="brand-mark">T</span><span>TIBE <small>PHOTO & VIDEO STUDIO</small></span></a>
+<nav><a href="#services">Services</a><a href="#passport">Passport Maker</a><a href="#gallery">Gallery</a><a href="#contact">Contact</a></nav>
 </header>
 <main>
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="eyebrow">CREATIVE • PROFESSIONAL • DIGITAL</p>
-      <h1>Make every moment<br><em>look unforgettable.</em></h1>
-      <p>Photography, video, photo editing and creative digital services — all in one studio.</p>
-      <a class="button" href="#passport">Create passport photo <span>↗</span></a>
-    </div>
-    <div class="hero-art"><div class="lens"></div><div class="hero-note">YOUR STORY<br><b>IN FOCUS.</b></div></div>
-  </section>
-
-  <section class="section" id="services">
-    <div class="section-heading"><p class="eyebrow">WHAT WE DO</p><h2>Studio services</h2></div>
-    <div class="service-grid">
-      <article class="service-card"><span>01</span><h3>Photography</h3><p>Portraits, events, family and professional photos.</p></article>
-      <article class="service-card"><span>02</span><h3>Videography</h3><p>Event coverage and memorable video production.</p></article>
-      <article class="service-card"><span>03</span><h3>Photo Editing</h3><p>Retouching, background changes and image enhancement.</p></article>
-      <article class="service-card"><span>04</span><h3>AI Creative Tools</h3><p>Helpful online tools for restoration and background removal.</p></article>
-    </div>
-  </section>
-
-  <section class="section passport-section" id="passport">
-    <div class="section-heading"><p class="eyebrow">FREE ONLINE TOOL</p><h2>3 × 4 cm Passport Photo Maker</h2><p>Prepare a print-sized portrait in your browser. Your selected photo stays on your device.</p></div>
-    <div class="passport-layout">
-      <div class="tool-panel">
-        <label class="upload-box" for="photoInput"><span class="upload-icon">＋</span><b>Choose your photo</b><small>JPG or PNG • processed on this device</small></label>
-        <input id="photoInput" type="file" accept="image/*" hidden>
-        <div class="control"><label for="zoom">Zoom</label><input id="zoom" type="range" min="1" max="2.5" value="1" step=".01"></div>
-        <div class="control"><label for="moveX">Move left / right</label><input id="moveX" type="range" min="-100" max="100" value="0"></div>
-        <div class="control"><label for="moveY">Move up / down</label><input id="moveY" type="range" min="-100" max="100" value="0"></div>
-        <button class="button full" id="downloadBtn" disabled>Download 3 × 4 cm PNG</button>
-        <p class="hint">Output: 354 × 472 pixels. For approximately 3 × 4 cm, print at 300 DPI. This tool crops and resizes; it does not automatically remove the original background or certify official passport requirements.</p>
-      </div>
-      <div class="preview-panel">
-        <div class="preview-label">LIVE PREVIEW <span>3:4</span></div>
-        <div class="passport-frame"><canvas id="passportCanvas" width="354" height="472"></canvas><div id="emptyState">Your passport photo<br>will appear here</div></div>
-        <p class="preview-caption">White canvas • Face-preserving crop • PNG download</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="gallery">
-    <div class="section-heading"><p class="eyebrow">OUR WORK</p><h2>Creative gallery</h2></div>
-    <div class="gallery-grid">
-      <div class="gallery-tile tile-one"><span>PORTRAIT</span></div>
-      <div class="gallery-tile tile-two"><span>CELEBRATION</span></div>
-      <div class="gallery-tile tile-three"><span>CREATIVE EDIT</span></div>
-    </div>
-  </section>
-
-  <section class="section tools-section">
-    <div class="section-heading"><p class="eyebrow">ONLINE CREATIVE TOOLS</p><h2>Explore more tools</h2><p>Open these external services in your browser. Availability and terms are controlled by each provider.</p></div>
-    <div class="external-tools">
-      <a href="https://huggingface.co/spaces/tkawano/face-restoration" target="_blank" rel="noopener"><b>Face Restoration</b><span>Try an online face restoration demo ↗</span></a>
-      <a href="https://rmbg.me/" target="_blank" rel="noopener"><b>Background Remover</b><span>Remove a photo background online ↗</span></a>
-    </div>
-  </section>
-
-  <section class="contact-section" id="contact">
-    <p class="eyebrow">LET'S CREATE SOMETHING</p><h2>Contact TIBE Studio</h2>
-    <p>For bookings, photo editing and video services.</p>
-    <div class="contact-links"><a href="tel:0919812680">☎ 0919812680</a><a href="mailto:enewaricity@gmail.com">✉ enewaricity@gmail.com</a></div>
-    <a class="button" href="https://wa.me/251919812680" target="_blank" rel="noopener">Chat on WhatsApp ↗</a>
-  </section>
-</main>
-<footer>© <span id="year"></span> TIBE PHOTO & VIDEO STUDIO. All rights reserved.</footer>
-<script src="script.js"></script>
-</body>
-</html>
+<section class="hero"><div class="hero-copy"><p class="eyebrow">CREATIVE • PROFESSIONAL • DIGITAL</p><h1>Make every moment<br><em>look unforgettable.</em></h1><p>Photography, video, photo editing and creative digital services — all in one studio.</p><a class="button" href="#passport">Create passport photo <span>↗</span></a></div><div class="hero-art"><div class="lens"></div><div class="hero-note">YOUR STORY<br><b>IN FOCUS.</b></div></div></section>
+<section class="section" id="services"><div class="section-heading"><p class="eyebrow">WHAT WE DO</p><h2>Studio services</h2></div><div class="service-grid">
+<article class="service-card"><span>01</span><h3>Photography</h3><p>Portraits, events, family and professional photos.</p></article><article class="service-card"><span>02</span><h3>Videography</h3><p>Event coverage and memorable video production.</p></article><article class="service-card"><span>03</span><h3>Photo Editing</h3><p>Retouching, background changes and image enhancement.</p></article><article class="service-card"><span>04</span><h3>AI Creative Tools</h3><p>Helpful online tools for restoration and background removal.</p></article></div></section>
+<section class="section passport-section" id="passport">
+<div class="section-heading"><p class="eyebrow">FREE ONLINE TOOL</p><h2>Passport Photo & A4 Print Maker</h2><p>Make a 3 × 4 cm crop, then arrange repeated copies on an A4 print sheet. Photos are processed in your browser.</p></div>
+<div class="passport-layout">
+<div class="tool-panel">
+<label class="upload-box" for="photoInput"><span class="upload-icon">＋</span><b>Choose your photo</b><small>JPG or PNG • processed on this device</small></label><input id="photoInput" type="file" accept="image/*" hidden>
+<div class="control"><label for="zoom">Zoom</label><input id="zoom" type="range" min="1" max="2.5" value="1" step=".01"></div>
+<div class="control"><label for="moveX">Move left / right</label><input id="moveX" type="range" min="-100" max="100" value="0"></div>
+<div class="control"><label for="moveY">Move up / down</label><input id="moveY" type="range" min="-100" max="100" value="0"></div>
+<button class="button full" id="downloadBtn" disabled>Download one 3 × 4 cm PNG</button>
+<button class="button full secondary" id="sheetBtn" disabled>Download A4 sheet (35 copies)</button>
+<p class="hint">Single photo: 354 × 472 px. A4 sheet: 2480 × 3508 px. Print at 300 DPI and choose A4 paper with “Actual size” or 100% scale. Check your local passport-photo rules before printing.</p>
+</div>
+<div class="preview-panel"><div class="preview-label">LIVE PREVIEW <span>3:4</span></div><div class="passport-frame"><canvas id="passportCanvas" width="354" height="472"></canvas><div id="emptyState">Your passport photo<br>will appear here</div></div><p class="preview-caption">White canvas • Face-preserving crop • PNG download</p></div>
+</div>
+<div class="background-help"><div><b>Need to make the background white?</b><p>First remove the background with an external tool, download the result, then upload it here. This website does not yet perform automatic AI background removal.</p></div><a class="button" href="https://rmbg.me/" target="_blank" rel="noopener">Open Background Remover ↗</a></div>
+</section>
+<section class="section" id="gallery"><div class="section-heading"><p class="eyebrow">OUR WORK</p><h2>Creative gallery</h2></div><div class="gallery-grid"><div class="gallery-tile tile-one"><span>PORTRAIT</span></div><div class="gallery-tile tile-two"><span>CELEBRATION</span></div><div class="gallery-tile tile-three"><span>CREATIVE EDIT</span></div></div></section>
+<section class="section tools-section"><div class="section-heading"><p class="eyebrow">ONLINE CREATIVE TOOLS</p><h2>Explore more tools</h2><p>External services are opened separately; their privacy, availability and terms are controlled by their providers.</p></div><div class="external-tools"><a href="https://huggingface.co/spaces/tkawano/face-restoration" target="_blank" rel="noopener"><b>Face Restoration</b><span>Try an online face restoration demo ↗</span></a><a href="https://rmbg.me/" target="_blank" rel="noopener"><b>Background Remover</b><span>Remove a photo background online ↗</span></a></div></section>
+<section class="contact-section" id="contact"><p class="eyebrow">LET'S CREATE SOMETHING</p><h2>Contact TIBE Studio</h2><p>For bookings, photo editing and video services.</p><div class="contact-links"><a href="tel:0919812680">☎ 0919812680</a><a href="mailto:enewaricity@gmail.com">✉ enewaricity@gmail.com</a></div><a class="button" href="https://wa.me/251919812680" target="_blank" rel="noopener">Chat on WhatsApp ↗</a></section>
+</main><footer>© <span id="year"></span> TIBE PHOTO & VIDEO STUDIO. All rights reserved.</footer><script src="script.js"></script>
+</body></html>
