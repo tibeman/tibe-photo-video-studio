@@ -1,1 +1,2 @@
-const note=document.getElementById('note'),status=document.getElementById('status');note.value=localStorage.getItem('tibeAdminNote')||'';document.getElementById('saveNote').addEventListener('click',()=>{localStorage.setItem('tibeAdminNote',note.value);status.textContent='Saved in this browser on this device.';});
+// Reserved for future secure admin functionality.
+// GitHub Pages is static hosting; this file does not provide authentication or a database.
