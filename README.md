@@ -1,16 +1,22 @@
-# TIBE PHOTO & VIDEO STUDIO — starter
+# TIBE PHOTO & VIDEO STUDIO — v4
 
-## Publish free with GitHub Pages
-1. Create a public GitHub repository.
-2. Upload the contents of this folder (not the folder itself) to the repository root.
-3. Open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select branch `main` and folder `/ (root)`, then Save.
-6. Wait for the published URL shown on the Pages settings screen.
+A responsive static website with a browser-based 3×4 cm passport photo crop/resizer.
 
-## Before launch
-- Replace sample gallery images with photos you own or have permission to use.
-- Set `STUDIO_WHATSAPP` in `script.js` to your WhatsApp number in international digits-only format.
-- The AI Studio is a local browser image-adjustment demo, not a real AI service.
-- The admin page is an unsecured local demo using browser storage. It is not a real shared admin system.
-- GitHub Pages is static hosting. Do not put passwords, secret API keys, private customer uploads, payment credentials, or backend code in this repository. Real AI processing, accounts, secure uploads, database and payments require a secure backend and suitable services.
+## Deploy on GitHub Pages
+1. Open your repository: `tibeman/tibe-photo-video-studio`.
+2. Upload and replace the files from this ZIP in the repository root.
+3. Commit the changes to the `main` branch.
+4. Wait a short time, then refresh the published GitHub Pages site.
+
+## Passport photo tool
+- Select a JPG/PNG photo.
+- Adjust zoom and horizontal/vertical crop position.
+- Download a 354×472 PNG.
+- Approximate print size is 3×4 cm when printed at 300 DPI.
+- It does not automatically remove backgrounds, alter faces, or certify official passport-photo rules.
+- The image is processed in the browser and is not uploaded by this tool.
+
+## Important limitations
+GitHub Pages hosts static files only. The admin page is a local demo, not secure authentication or a shared database. Do not store passwords, private customer photos, or API keys in this repository. Real AI processing, secure customer uploads, bookings database and protected admin tools need a backend and may incur costs.
+
+External demos are linked for convenience; their availability, licenses, privacy terms and commercial-use permissions are controlled by their providers.
