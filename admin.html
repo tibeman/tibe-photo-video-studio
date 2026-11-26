@@ -4,67 +4,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TIBE Studio | Admin Dashboard</title>
+<title>TIBE Studio Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101010;color:#fff;font-family:Arial,sans-serif}
-header{background:#191919;padding:18px 20px;border-bottom:1px solid #b89545;display:flex;justify-content:space-between;align-items:center}
-h1{font-size:20px;color:#d9b65c;margin:0}
-main{max-width:1000px;margin:25px auto;padding:15px}
-.panel{background:#1b1b1b;border:1px solid #383838;border-radius:12px;padding:20px;margin-bottom:20px}
+header{background:#191919;padding:18px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #c5a04c}
+h1{font-size:21px;color:#d9b65c;margin:0}
+main{max-width:950px;margin:25px auto;padding:15px}
+.panel{background:#1b1b1b;border:1px solid #383838;border-radius:14px;padding:20px;margin-bottom:20px}
 h2{color:#d9b65c;margin-top:0}
-input,select,button{width:100%;padding:13px;margin:7px 0;border-radius:7px;border:1px solid #555;font-size:15px}
-input,select{background:#101010;color:white}
+input,select,button{width:100%;padding:13px;margin:8px 0;border-radius:8px;font-size:15px}
+input,select{background:#101010;color:white;border:1px solid #555}
+input[type=file]{padding:15px}
 button{background:#c5a04c;color:#111;font-weight:bold;border:0;cursor:pointer}
-button.secondary{background:#333;color:white}
-button.danger{background:#9e3030;color:white}
-button.small{width:auto;padding:8px 12px;margin:3px}
-.hidden{display:none}
-.message{padding:12px;background:#292929;border-radius:7px;margin:10px 0;overflow-wrap:anywhere}
-.item{padding:14px 0;border-bottom:1px solid #444;overflow-wrap:anywhere}
+button:disabled{opacity:.5}
+.secondary{background:#333;color:white}
+.danger{background:#a83232;color:white}
+.small{width:auto;padding:9px 13px;margin:4px}
+.hidden{display:none!important}
+.message{padding:12px;background:#292929;border-radius:8px;margin-top:10px;overflow-wrap:anywhere}
+.item{padding:15px 0;border-bottom:1px solid #444;overflow-wrap:anywhere}
 .item:last-child{border:0}
 .muted{color:#bbb;font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-img.preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px}
+.preview{width:100%;max-height:220px;object-fit:cover;border-radius:9px;margin:8px 0}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media(max-width:600px){main{padding:10px}.panel{padding:16px}h1{font-size:17px}}
 </style>
 </head>
 <body>
+
 <header>
 <h1>TIBE STUDIO ADMIN</h1>
 <button id="logoutBtn" class="secondary hidden" style="width:auto">Logout</button>
 </header>
 
 <main>
+
 <section id="loginPanel" class="panel">
 <h2>Admin Login</h2>
-<p class="muted">Sign in using your registered admin email and password.</p>
+<p class="muted">Sign in with your registered administrator account.</p>
 <input id="email" type="email" placeholder="Admin email">
 <input id="password" type="password" placeholder="Password">
 <button id="loginBtn">LOGIN</button>
-<div id="loginMessage" class="message">Enter your admin details to continue.</div>
+<div id="loginMessage" class="message">Enter your admin email and password.</div>
 </section>
 
 <section id="dashboard" class="hidden">
+
 <div class="panel">
 <h2>Welcome to TIBE Studio</h2>
-<p>Manage customer bookings and your photo gallery.</p>
+<p>Manage your bookings and photo gallery.</p>
 </div>
 
 <div class="panel">
+<div class="topline">
 <h2>Customer Bookings</h2>
+</div>
 <button id="refreshBookings" class="secondary">Refresh Bookings</button>
 <div id="bookingsList">Loading bookings...</div>
 </div>
 
 <div class="panel">
 <h2>Add Gallery Photo</h2>
-<input id="photoTitle" placeholder="Photo title">
-<input id="photoCategory" placeholder="Category (Wedding, Portrait, etc.)">
-<input id="photoUrl" type="url" placeholder="Public image URL (https://...)">
-<button id="addPhotoBtn">ADD PHOTO</button>
-<div id="galleryMessage" class="message">Add a photo using its public image URL.</div>
+<p class="muted">Choose a photo directly from your phone.</p>
+
+<label for="photoTitle">Photo title</label>
+<input id="photoTitle" placeholder="Example: Wedding Photography">
+
+<label for="photoCategory">Category</label>
+<select id="photoCategory">
+<option value="">Choose category</option>
+<option>Wedding</option>
+<option>Portrait</option>
+<option>Birthday</option>
+<option>Passport</option>
+<option>Family</option>
+<option>Video</option>
+<option>Other</option>
+</select>
+
+<label for="photoFile">Choose photo</label>
+<input id="photoFile" type="file" accept="image/*">
+
+<div id="photoPreview"></div>
+
+<button id="addPhotoBtn">UPLOAD PHOTO</button>
+<div id="galleryMessage" class="message">Your selected photo will be uploaded to the studio gallery.</div>
 </div>
 
 <div class="panel">
@@ -72,29 +99,30 @@ img.preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px}
 <button id="refreshGallery" class="secondary">Refresh Gallery</button>
 <div id="galleryList">Loading gallery...</div>
 </div>
+
 </section>
 </main>
 
 <script>
 const db = window.supabaseClient;
-
+const BUCKET = "studio-gallery";
 const $ = id => document.getElementById(id);
 
-function showMessage(id, text) {
+function message(id, text) {
   $(id).textContent = text;
 }
 
-function safe(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",
-    '"':"&quot;","'":"&#39;"
-  }[c]));
+function make(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
 }
 
 function checkClient() {
   if (!db) {
-    showMessage("loginMessage",
-      "Connection error: Supabase client not found. Check supabase-config.js and script loading.");
+    message("loginMessage",
+      "Supabase connection not found. Check supabase-config.js.");
     $("loginBtn").disabled = true;
     return false;
   }
@@ -102,14 +130,18 @@ function checkClient() {
 }
 
 async function verifyAdmin() {
-  const { data: userData, error: userError } = await db.auth.getUser();
+  const {data: userData, error: userError} =
+    await db.auth.getUser();
+
   if (userError || !userData.user) return false;
 
-  const { data, error } = await db.rpc("is_studio_admin");
+  const {data, error} = await db.rpc("is_studio_admin");
+
   if (error) {
-    showMessage("loginMessage", "Admin verification failed: " + error.message);
+    message("loginMessage", "Admin verification error: " + error.message);
     return false;
   }
+
   return data === true;
 }
 
@@ -128,32 +160,33 @@ $("loginBtn").addEventListener("click", async () => {
   const password = $("password").value;
 
   if (!email || !password) {
-    showMessage("loginMessage", "Please enter your email and password.");
+    message("loginMessage", "Enter email and password.");
     return;
   }
 
   $("loginBtn").disabled = true;
-  showMessage("loginMessage", "Signing in...");
+  message("loginMessage", "Signing in...");
 
-  const { error } = await db.auth.signInWithPassword({ email, password });
+  try {
+    const {error} = await db.auth.signInWithPassword({
+      email, password
+    });
 
-  if (error) {
-    showMessage("loginMessage", "Login failed: " + error.message);
-    $("loginBtn").disabled = false;
-    return;
+    if (error) throw error;
+
+    const allowed = await verifyAdmin();
+
+    if (!allowed) {
+      await db.auth.signOut();
+      throw new Error("This account is not registered as a studio admin.");
+    }
+
+    await openDashboard();
+
+  } catch (error) {
+    message("loginMessage", "Login failed: " + error.message);
   }
 
-  const allowed = await verifyAdmin();
-
-  if (!allowed) {
-    await db.auth.signOut();
-    showMessage("loginMessage", "Access denied. This account is not registered as a studio admin.");
-    $("loginBtn").disabled = false;
-    return;
-  }
-
-  showMessage("loginMessage", "Login successful.");
-  await openDashboard();
   $("loginBtn").disabled = false;
 });
 
@@ -163,20 +196,20 @@ $("logoutBtn").addEventListener("click", async () => {
   $("loginPanel").classList.remove("hidden");
   $("logoutBtn").classList.add("hidden");
   $("password").value = "";
-  showMessage("loginMessage", "You have logged out.");
+  message("loginMessage", "You have logged out.");
 });
 
 async function loadBookings() {
   const area = $("bookingsList");
   area.textContent = "Loading bookings...";
 
-  const { data, error } = await db
+  const {data, error} = await db
     .from("bookings")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", {ascending:false});
 
   if (error) {
-    area.textContent = "Could not load bookings: " + error.message;
+    area.textContent = "Booking error: " + error.message;
     return;
   }
 
@@ -185,79 +218,144 @@ async function loadBookings() {
     return;
   }
 
-  area.innerHTML = data.map(b => `
-    <div class="item">
-      <strong>${safe(b.customer_name)}</strong>
-      <p class="muted">Phone: ${safe(b.phone)}</p>
-      <p>Service: ${safe(b.service)}</p>
-      <p>Date: ${safe(b.booking_date)} | Time: ${safe(b.booking_time)}</p>
-      <p>Note: ${safe(b.note || "-")}</p>
-      <p>Status: <strong>${safe(b.status)}</strong></p>
-      <select id="status-${safe(b.id)}">
-        <option value="pending" ${b.status==="pending"?"selected":""}>Pending</option>
-        <option value="confirmed" ${b.status==="confirmed"?"selected":""}>Confirmed</option>
-        <option value="completed" ${b.status==="completed"?"selected":""}>Completed</option>
-        <option value="cancelled" ${b.status==="cancelled"?"selected":""}>Cancelled</option>
-      </select>
-      <button class="small" onclick="updateBooking('${safe(b.id)}')">Update Status</button>
-    </div>
-  `).join("");
-}
+  area.replaceChildren();
 
-async function updateBooking(id) {
-  const status = $("status-" + id).value;
-  const { error } = await db.from("bookings")
-    .update({ status })
-    .eq("id", id);
+  data.forEach(b => {
+    const item = make("div", "item");
+    item.append(make("strong", "", b.customer_name || "Customer"));
+    item.append(make("p", "muted", "Phone: " + (b.phone || "-")));
+    item.append(make("p", "", "Service: " + (b.service || "-")));
+    item.append(make("p", "", "Date: " + (b.booking_date || "-")));
+    item.append(make("p", "", "Time: " + (b.booking_time || "-")));
+    item.append(make("p", "", "Note: " + (b.note || "-")));
+    item.append(make("p", "", "Status: " + b.status));
 
-  if (error) {
-    alert("Update failed: " + error.message);
-    return;
-  }
-  alert("Booking status updated.");
-  await loadBookings();
+    const select = document.createElement("select");
+    ["pending","confirmed","completed","cancelled"].forEach(status => {
+      const option = document.createElement("option");
+      option.value = status;
+      option.textContent = status;
+      option.selected = b.status === status;
+      select.append(option);
+    });
+
+    const update = make("button", "small", "Update Status");
+    update.addEventListener("click", async () => {
+      update.disabled = true;
+      const {error} = await db.from("bookings")
+        .update({status:select.value})
+        .eq("id", b.id);
+
+      if (error) {
+        alert("Update failed: " + error.message);
+      } else {
+        alert("Booking status updated.");
+        await loadBookings();
+      }
+      update.disabled = false;
+    });
+
+    item.append(select, update);
+    area.append(item);
+  });
 }
 
 $("refreshBookings").addEventListener("click", loadBookings);
 
-async function addPhoto() {
-  const title = $("photoTitle").value.trim();
-  const category = $("photoCategory").value.trim();
-  const image_url = $("photoUrl").value.trim();
+$("photoFile").addEventListener("change", () => {
+  const file = $("photoFile").files[0];
+  const preview = $("photoPreview");
+  preview.replaceChildren();
 
-  if (!title || !category || !image_url) {
-    showMessage("galleryMessage", "Please fill in all fields.");
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    message("galleryMessage", "Please choose an image file.");
+    $("photoFile").value = "";
     return;
   }
 
-  try {
-    const url = new URL(image_url);
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
-      throw new Error("Invalid URL");
-    }
-  } catch {
-    showMessage("galleryMessage", "Please enter a valid public image URL.");
+  const img = document.createElement("img");
+  img.className = "preview";
+  img.alt = "Selected photo preview";
+  img.src = URL.createObjectURL(file);
+  preview.append(img);
+
+  message("galleryMessage", "Photo selected: " + file.name);
+});
+
+async function addPhoto() {
+  const title = $("photoTitle").value.trim();
+  const category = $("photoCategory").value;
+  const file = $("photoFile").files[0];
+
+  if (!title || !category || !file) {
+    message("galleryMessage", "Enter a title, choose a category and select a photo.");
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    message("galleryMessage", "Please select a valid image.");
+    return;
+  }
+
+  if (file.size > 8 * 1024 * 1024) {
+    message("galleryMessage", "Photo is too large. Maximum size is 8 MB.");
     return;
   }
 
   $("addPhotoBtn").disabled = true;
+  message("galleryMessage", "Uploading photo... Please wait.");
 
-  const { error } = await db.from("gallery").insert([{
-    title, category, image_url, is_published: true
-  }]);
+  const extension = (file.name.split(".").pop() || "jpg")
+    .toLowerCase().replace(/[^a-z0-9]/g, "");
 
-  $("addPhotoBtn").disabled = false;
+  const filePath = Date.now() + "-" +
+    crypto.randomUUID() + "." + extension;
 
-  if (error) {
-    showMessage("galleryMessage", "Could not add photo: " + error.message);
-    return;
+  try {
+    const {error:uploadError} = await db.storage
+      .from(BUCKET)
+      .upload(filePath, file, {
+        cacheControl:"3600",
+        upsert:false,
+        contentType:file.type
+      });
+
+    if (uploadError) throw uploadError;
+
+    const {data:urlData} = db.storage
+      .from(BUCKET)
+      .getPublicUrl(filePath);
+
+    const {error:insertError} = await db
+      .from("gallery")
+      .insert([{
+        title:title,
+        category:category,
+        image_url:urlData.publicUrl,
+        is_published:true
+      }]);
+
+    if (insertError) {
+      await db.storage.from(BUCKET).remove([filePath]);
+      throw insertError;
+    }
+
+    message("galleryMessage", "Photo uploaded successfully!");
+
+    $("photoTitle").value = "";
+    $("photoCategory").value = "";
+    $("photoFile").value = "";
+    $("photoPreview").replaceChildren();
+
+    await loadGallery();
+
+  } catch (error) {
+    message("galleryMessage", "Upload failed: " + error.message);
   }
 
-  showMessage("galleryMessage", "Photo added successfully.");
-  $("photoTitle").value = "";
-  $("photoCategory").value = "";
-  $("photoUrl").value = "";
-  await loadGallery();
+  $("addPhotoBtn").disabled = false;
 }
 
 $("addPhotoBtn").addEventListener("click", addPhoto);
@@ -266,13 +364,12 @@ async function loadGallery() {
   const area = $("galleryList");
   area.textContent = "Loading gallery...";
 
-  const { data, error } = await db
-    .from("gallery")
+  const {data, error} = await db.from("gallery")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", {ascending:false});
 
   if (error) {
-    area.textContent = "Could not load gallery: " + error.message;
+    area.textContent = "Gallery error: " + error.message;
     return;
   }
 
@@ -281,41 +378,77 @@ async function loadGallery() {
     return;
   }
 
-  area.innerHTML = data.map(p => `
-    <div class="item">
-      <img class="preview" src="${safe(p.image_url)}" alt="${safe(p.title)}">
-      <strong>${safe(p.title)}</strong>
-      <p class="muted">${safe(p.category)} | ${p.is_published ? "Published" : "Hidden"}</p>
-      <button class="small" onclick="togglePhoto('${safe(p.id)}',${!p.is_published})">
-        ${p.is_published ? "Hide Photo" : "Publish Photo"}
-      </button>
-      <button class="small danger" onclick="deletePhoto('${safe(p.id)}')">Delete</button>
-    </div>
-  `).join("");
-}
+  area.replaceChildren();
 
-async function togglePhoto(id, visible) {
-  const { error } = await db.from("gallery")
-    .update({ is_published: visible })
-    .eq("id", id);
+  data.forEach(photo => {
+    const item = make("div", "item");
+    const img = document.createElement("img");
+    img.className = "preview";
+    img.src = photo.image_url;
+    img.alt = photo.title || "Studio photo";
+    item.append(img);
 
-  if (error) {
-    alert("Could not update photo: " + error.message);
-    return;
-  }
-  await loadGallery();
-}
+    item.append(make("strong", "", photo.title || "Untitled"));
+    item.append(make("p", "muted",
+      (photo.category || "") + " | " +
+      (photo.is_published ? "Published" : "Hidden")));
 
-async function deletePhoto(id) {
-  if (!confirm("Are you sure you want to delete this photo?")) return;
+    const toggle = make("button", "small",
+      photo.is_published ? "Hide Photo" : "Publish Photo");
 
-  const { error } = await db.from("gallery").delete().eq("id", id);
+    toggle.addEventListener("click", async () => {
+      toggle.disabled = true;
 
-  if (error) {
-    alert("Could not delete photo: " + error.message);
-    return;
-  }
-  await loadGallery();
+      const {error} = await db.from("gallery")
+        .update({is_published:!photo.is_published})
+        .eq("id", photo.id);
+
+      if (error) {
+        alert("Could not update: " + error.message);
+      } else {
+        await loadGallery();
+      }
+      toggle.disabled = false;
+    });
+
+    const del = make("button", "small danger", "Delete Photo");
+
+    del.addEventListener("click", async () => {
+      if (!confirm("Delete this gallery photo?")) return;
+
+      del.disabled = true;
+
+      const {error} = await db.from("gallery")
+        .delete().eq("id", photo.id);
+
+      if (error) {
+        alert("Delete failed: " + error.message);
+        del.disabled = false;
+        return;
+      }
+
+      // Also remove the image file from the public bucket
+      try {
+        const url = new URL(photo.image_url);
+        const marker = "/storage/v1/object/public/" + BUCKET + "/";
+        const position = url.pathname.indexOf(marker);
+
+        if (position !== -1) {
+          const path = decodeURIComponent(
+            url.pathname.slice(position + marker.length)
+          );
+          await db.storage.from(BUCKET).remove([path]);
+        }
+      } catch (e) {
+        console.log("Storage cleanup could not be completed.");
+      }
+
+      await loadGallery();
+    });
+
+    item.append(toggle, del);
+    area.append(item);
+  });
 }
 
 $("refreshGallery").addEventListener("click", loadGallery);
@@ -323,9 +456,11 @@ $("refreshGallery").addEventListener("click", loadGallery);
 async function restoreSession() {
   if (!checkClient()) return;
 
-  const { data } = await db.auth.getSession();
+  const {data} = await db.auth.getSession();
+
   if (data.session) {
     const allowed = await verifyAdmin();
+
     if (allowed) {
       await openDashboard();
     } else {
