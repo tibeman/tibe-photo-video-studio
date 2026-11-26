@@ -1,1 +1,340 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TIBE Studio Admin Notes</title><link rel="stylesheet" href="style.css"></head><body><main class="section"><p class="eyebrow">STUDIO MANAGEMENT</p><h2>Admin setup notes</h2><p class="muted">This is a simple setup guide, not a secure admin login or database.</p><div class="contact-card"><h3>Update your studio details</h3><ol><li>Open <code>index.html</code> and edit the contact section.</li><li>Replace the sample gallery image URLs with your own public image links.</li><li>Update the WhatsApp link with your correct country code and number.</li><li>Upload the changed files to your GitHub repository.</li></ol><p>Never place passwords, private customer photos, or API keys in this public repository.</p><a class="btn gold" href="index.html">Open website</a></div></main></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIBE Studio | Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:#fff;font-family:Arial,sans-serif}
+header{background:#191919;padding:18px 20px;border-bottom:1px solid #b89545;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:20px;color:#d9b65c;margin:0}
+main{max-width:1000px;margin:25px auto;padding:15px}
+.panel{background:#1b1b1b;border:1px solid #383838;border-radius:12px;padding:20px;margin-bottom:20px}
+h2{color:#d9b65c;margin-top:0}
+input,select,button{width:100%;padding:13px;margin:7px 0;border-radius:7px;border:1px solid #555;font-size:15px}
+input,select{background:#101010;color:white}
+button{background:#c5a04c;color:#111;font-weight:bold;border:0;cursor:pointer}
+button.secondary{background:#333;color:white}
+button.danger{background:#9e3030;color:white}
+button.small{width:auto;padding:8px 12px;margin:3px}
+.hidden{display:none}
+.message{padding:12px;background:#292929;border-radius:7px;margin:10px 0;overflow-wrap:anywhere}
+.item{padding:14px 0;border-bottom:1px solid #444;overflow-wrap:anywhere}
+.item:last-child{border:0}
+.muted{color:#bbb;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+img.preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+<h1>TIBE STUDIO ADMIN</h1>
+<button id="logoutBtn" class="secondary hidden" style="width:auto">Logout</button>
+</header>
+
+<main>
+<section id="loginPanel" class="panel">
+<h2>Admin Login</h2>
+<p class="muted">Sign in using your registered admin email and password.</p>
+<input id="email" type="email" placeholder="Admin email">
+<input id="password" type="password" placeholder="Password">
+<button id="loginBtn">LOGIN</button>
+<div id="loginMessage" class="message">Enter your admin details to continue.</div>
+</section>
+
+<section id="dashboard" class="hidden">
+<div class="panel">
+<h2>Welcome to TIBE Studio</h2>
+<p>Manage customer bookings and your photo gallery.</p>
+</div>
+
+<div class="panel">
+<h2>Customer Bookings</h2>
+<button id="refreshBookings" class="secondary">Refresh Bookings</button>
+<div id="bookingsList">Loading bookings...</div>
+</div>
+
+<div class="panel">
+<h2>Add Gallery Photo</h2>
+<input id="photoTitle" placeholder="Photo title">
+<input id="photoCategory" placeholder="Category (Wedding, Portrait, etc.)">
+<input id="photoUrl" type="url" placeholder="Public image URL (https://...)">
+<button id="addPhotoBtn">ADD PHOTO</button>
+<div id="galleryMessage" class="message">Add a photo using its public image URL.</div>
+</div>
+
+<div class="panel">
+<h2>Manage Gallery</h2>
+<button id="refreshGallery" class="secondary">Refresh Gallery</button>
+<div id="galleryList">Loading gallery...</div>
+</div>
+</section>
+</main>
+
+<script>
+const db = window.supabaseClient;
+
+const $ = id => document.getElementById(id);
+
+function showMessage(id, text) {
+  $(id).textContent = text;
+}
+
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function checkClient() {
+  if (!db) {
+    showMessage("loginMessage",
+      "Connection error: Supabase client not found. Check supabase-config.js and script loading.");
+    $("loginBtn").disabled = true;
+    return false;
+  }
+  return true;
+}
+
+async function verifyAdmin() {
+  const { data: userData, error: userError } = await db.auth.getUser();
+  if (userError || !userData.user) return false;
+
+  const { data, error } = await db.rpc("is_studio_admin");
+  if (error) {
+    showMessage("loginMessage", "Admin verification failed: " + error.message);
+    return false;
+  }
+  return data === true;
+}
+
+async function openDashboard() {
+  $("loginPanel").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  $("logoutBtn").classList.remove("hidden");
+  await loadBookings();
+  await loadGallery();
+}
+
+$("loginBtn").addEventListener("click", async () => {
+  if (!checkClient()) return;
+
+  const email = $("email").value.trim();
+  const password = $("password").value;
+
+  if (!email || !password) {
+    showMessage("loginMessage", "Please enter your email and password.");
+    return;
+  }
+
+  $("loginBtn").disabled = true;
+  showMessage("loginMessage", "Signing in...");
+
+  const { error } = await db.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    showMessage("loginMessage", "Login failed: " + error.message);
+    $("loginBtn").disabled = false;
+    return;
+  }
+
+  const allowed = await verifyAdmin();
+
+  if (!allowed) {
+    await db.auth.signOut();
+    showMessage("loginMessage", "Access denied. This account is not registered as a studio admin.");
+    $("loginBtn").disabled = false;
+    return;
+  }
+
+  showMessage("loginMessage", "Login successful.");
+  await openDashboard();
+  $("loginBtn").disabled = false;
+});
+
+$("logoutBtn").addEventListener("click", async () => {
+  await db.auth.signOut();
+  $("dashboard").classList.add("hidden");
+  $("loginPanel").classList.remove("hidden");
+  $("logoutBtn").classList.add("hidden");
+  $("password").value = "";
+  showMessage("loginMessage", "You have logged out.");
+});
+
+async function loadBookings() {
+  const area = $("bookingsList");
+  area.textContent = "Loading bookings...";
+
+  const { data, error } = await db
+    .from("bookings")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    area.textContent = "Could not load bookings: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    area.textContent = "No bookings yet.";
+    return;
+  }
+
+  area.innerHTML = data.map(b => `
+    <div class="item">
+      <strong>${safe(b.customer_name)}</strong>
+      <p class="muted">Phone: ${safe(b.phone)}</p>
+      <p>Service: ${safe(b.service)}</p>
+      <p>Date: ${safe(b.booking_date)} | Time: ${safe(b.booking_time)}</p>
+      <p>Note: ${safe(b.note || "-")}</p>
+      <p>Status: <strong>${safe(b.status)}</strong></p>
+      <select id="status-${safe(b.id)}">
+        <option value="pending" ${b.status==="pending"?"selected":""}>Pending</option>
+        <option value="confirmed" ${b.status==="confirmed"?"selected":""}>Confirmed</option>
+        <option value="completed" ${b.status==="completed"?"selected":""}>Completed</option>
+        <option value="cancelled" ${b.status==="cancelled"?"selected":""}>Cancelled</option>
+      </select>
+      <button class="small" onclick="updateBooking('${safe(b.id)}')">Update Status</button>
+    </div>
+  `).join("");
+}
+
+async function updateBooking(id) {
+  const status = $("status-" + id).value;
+  const { error } = await db.from("bookings")
+    .update({ status })
+    .eq("id", id);
+
+  if (error) {
+    alert("Update failed: " + error.message);
+    return;
+  }
+  alert("Booking status updated.");
+  await loadBookings();
+}
+
+$("refreshBookings").addEventListener("click", loadBookings);
+
+async function addPhoto() {
+  const title = $("photoTitle").value.trim();
+  const category = $("photoCategory").value.trim();
+  const image_url = $("photoUrl").value.trim();
+
+  if (!title || !category || !image_url) {
+    showMessage("galleryMessage", "Please fill in all fields.");
+    return;
+  }
+
+  try {
+    const url = new URL(image_url);
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      throw new Error("Invalid URL");
+    }
+  } catch {
+    showMessage("galleryMessage", "Please enter a valid public image URL.");
+    return;
+  }
+
+  $("addPhotoBtn").disabled = true;
+
+  const { error } = await db.from("gallery").insert([{
+    title, category, image_url, is_published: true
+  }]);
+
+  $("addPhotoBtn").disabled = false;
+
+  if (error) {
+    showMessage("galleryMessage", "Could not add photo: " + error.message);
+    return;
+  }
+
+  showMessage("galleryMessage", "Photo added successfully.");
+  $("photoTitle").value = "";
+  $("photoCategory").value = "";
+  $("photoUrl").value = "";
+  await loadGallery();
+}
+
+$("addPhotoBtn").addEventListener("click", addPhoto);
+
+async function loadGallery() {
+  const area = $("galleryList");
+  area.textContent = "Loading gallery...";
+
+  const { data, error } = await db
+    .from("gallery")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    area.textContent = "Could not load gallery: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    area.textContent = "No gallery photos yet.";
+    return;
+  }
+
+  area.innerHTML = data.map(p => `
+    <div class="item">
+      <img class="preview" src="${safe(p.image_url)}" alt="${safe(p.title)}">
+      <strong>${safe(p.title)}</strong>
+      <p class="muted">${safe(p.category)} | ${p.is_published ? "Published" : "Hidden"}</p>
+      <button class="small" onclick="togglePhoto('${safe(p.id)}',${!p.is_published})">
+        ${p.is_published ? "Hide Photo" : "Publish Photo"}
+      </button>
+      <button class="small danger" onclick="deletePhoto('${safe(p.id)}')">Delete</button>
+    </div>
+  `).join("");
+}
+
+async function togglePhoto(id, visible) {
+  const { error } = await db.from("gallery")
+    .update({ is_published: visible })
+    .eq("id", id);
+
+  if (error) {
+    alert("Could not update photo: " + error.message);
+    return;
+  }
+  await loadGallery();
+}
+
+async function deletePhoto(id) {
+  if (!confirm("Are you sure you want to delete this photo?")) return;
+
+  const { error } = await db.from("gallery").delete().eq("id", id);
+
+  if (error) {
+    alert("Could not delete photo: " + error.message);
+    return;
+  }
+  await loadGallery();
+}
+
+$("refreshGallery").addEventListener("click", loadGallery);
+
+async function restoreSession() {
+  if (!checkClient()) return;
+
+  const { data } = await db.auth.getSession();
+  if (data.session) {
+    const allowed = await verifyAdmin();
+    if (allowed) {
+      await openDashboard();
+    } else {
+      await db.auth.signOut();
+    }
+  }
+}
+
+restoreSession();
+</script>
+</body>
+</html>
