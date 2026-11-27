@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Photo Request | TIBE Studio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090909;color:#f5f0e7;font-family:Arial,sans-serif;padding:24px}
+main{max-width:600px;margin:35px auto;background:#171717;padding:25px;border:1px solid #443820;border-radius:14px}
+h1{color:#d6ad62}
+p{color:#bbb;line-height:1.6}
+label{display:block;margin-top:18px;margin-bottom:7px}
+input,select,textarea{width:100%;padding:14px;background:#242424;color:white;border:1px solid #555;border-radius:7px;font-size:16px}
+button{width:100%;padding:16px;margin-top:22px;background:#d6ad62;color:#17120a;border:0;border-radius:7px;font-size:17px;font-weight:bold}
+button:disabled{opacity:.5}
+#status{padding:12px;margin-top:15px;border-radius:7px;overflow-wrap:anywhere}
+a{color:#d6ad62}
+</style>
+</head>
+<body>
+<main>
+<h1>TIBE PHOTO & VIDEO STUDIO</h1>
+<h2>Send Your Photo</h2>
+<p>Upload your photo and tell us what service you need. Our studio will review your request.</p>
+
+<form id="requestForm">
+<label>Your full name</label>
+<input id="customerName" required maxlength="100" placeholder="Your name">
+
+<label>Phone number</label>
+<input id="phone" required maxlength="30" placeholder="Your phone number">
+
+<label>Choose service</label>
+<select id="service" required>
+<option value="">Choose service</option>
+<option>AI Photo Editing</option>
+<option>Background Change</option>
+<option>Passport Photo</option>
+<option>Birthday Photo</option>
+<option>Photo Restoration</option>
+<option>Video Editing</option>
+<option>Other</option>
+</select>
+
+<label>Choose your photo</label>
+<input id="customerPhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
+<p>Maximum file size: 8 MB. Accepted formats: JPG, PNG, WEBP.</p>
+
+<label>Describe what you want</label>
+<textarea id="note" rows="4" maxlength="1000" placeholder="Write your instructions here..."></textarea>
+
+<button id="sendBtn" type="submit">SEND PHOTO REQUEST</button>
+<div id="status" aria-live="polite"></div>
+</form>
+
+<p><a href="index.html">← Back to TIBE Studio website</a></p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+const db = window.supabaseClient;
+const form = document.getElementById("requestForm");
+const statusBox = document.getElementById("status");
+const sendBtn = document.getElementById("sendBtn");
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  if (!db) {
+    statusBox.textContent = "Connection error. Please try again later.";
+    return;
+  }
+
+  const name = document.getElementById("customerName").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const service = document.getElementById("service").value;
+  const note = document.getElementById("note").value.trim();
+  const file = document.getElementById("customerPhoto").files[0];
+
+  if (!name || !phone || !service || !file) {
+    statusBox.textContent = "Please complete all required fields.";
+    return;
+  }
+
+  const allowed = ["image/jpeg","image/png","image/webp"];
+  if (!allowed.includes(file.type)) {
+    statusBox.textContent = "Please choose JPG, PNG or WEBP.";
+    return;
+  }
+
+  if (file.size > 8 * 1024 * 1024) {
+    statusBox.textContent = "Photo is too large. Maximum size is 8 MB.";
+    return;
+  }
+
+  sendBtn.disabled = true;
+  statusBox.textContent = "Uploading your photo. Please wait...";
+
+  const extension = file.name.split(".").pop().toLowerCase();
+  const filePath = Date.now() + "-" + crypto.randomUUID() + "." + extension;
+
+  try {
+    const { error: uploadError } = await db.storage
+      .from("customer-uploads")
+      .upload(filePath, file, {
+        upsert: false,
+        contentType: file.type
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { error: requestError } = await db
+      .from("customer_photo_requests")
+      .insert([{
+        customer_name: name,
+        phone: phone,
+        service: service,
+        note: note,
+        file_path: filePath
+      }]);
+
+    if (requestError) throw requestError;
+
+    statusBox.textContent =
+      "Your request was sent successfully! Thank you for choosing TIBE Studio.";
+
+    form.reset();
+
+  } catch (error) {
+    console.error(error);
+    statusBox.textContent =
+      "Upload failed: " + error.message + ". Please contact the studio.";
+  }
+
+  sendBtn.disabled = false;
+});
+</script>
+</body>
+</html>
