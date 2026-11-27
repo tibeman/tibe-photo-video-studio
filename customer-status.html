@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Your Photo | TIBE Studio</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #090909;
+      color: #f5f0e8;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 22px 6%;
+      border-bottom: 1px solid #30291d;
+      background: #090909;
+    }
+
+    .brand {
+      color: #d9b36b;
+      font-size: 27px;
+      font-weight: bold;
+      letter-spacing: 4px;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 7px;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    nav {
+      margin-top: 22px;
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: #ddd;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      color: #d9b36b;
+    }
+
+    main {
+      width: 92%;
+      max-width: 650px;
+      margin: 55px auto;
+    }
+
+    .intro {
+      color: #d9b36b;
+      letter-spacing: 4px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-family: Georgia, serif;
+      font-size: 42px;
+      margin: 18px 0;
+    }
+
+    .description {
+      color: #aaa;
+      line-height: 1.8;
+      font-size: 17px;
+    }
+
+    .panel {
+      margin-top: 35px;
+      padding: 28px 22px;
+      background: #171717;
+      border: 1px solid #393126;
+      border-radius: 12px;
+    }
+
+    label {
+      display: block;
+      margin: 18px 0 9px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #514737;
+      border-radius: 7px;
+      background: #0d0d0d;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #d9b36b;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 17px;
+      border: none;
+      border-radius: 7px;
+      background: #d0a84f;
+      color: #111;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    #message {
+      margin-top: 20px;
+      line-height: 1.6;
+      color: #d9b36b;
+    }
+
+    .request {
+      margin-top: 22px;
+      padding: 22px;
+      border: 1px solid #514737;
+      border-radius: 9px;
+      background: #101010;
+    }
+
+    .request h3 {
+      color: #d9b36b;
+      margin-top: 0;
+    }
+
+    .request p {
+      color: #ccc;
+      line-height: 1.7;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 9px 13px;
+      border-radius: 6px;
+      background: #302719;
+      color: #e7c477;
+      font-weight: bold;
+    }
+
+    .status.completed {
+      background: #183522;
+      color: #8de0a4;
+    }
+
+    .status.cancelled {
+      background: #401d1d;
+      color: #ffaaaa;
+    }
+
+    footer {
+      margin-top: 80px;
+      padding: 30px 15px;
+      text-align: center;
+      color: #777;
+      border-top: 1px solid #30291d;
+    }
+
+    @media(max-width: 480px) {
+      h1 {
+        font-size: 34px;
+      }
+
+      .panel {
+        padding: 22px 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    TIBE
+    <small>PHOTO & VIDEO STUDIO</small>
+  </div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="index.html#services">Services</a>
+    <a href="customer-upload.html">Send Photo</a>
+    <a href="index.html#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <div class="intro">YOUR PHOTO • YOUR PROGRESS</div>
+
+  <h1>Track Your Photo</h1>
+
+  <p class="description">
+    Enter the same name and phone number you used when
+    submitting your photo request. You can check the
+    latest status of your work here.
+  </p>
+
+  <section class="panel">
+
+    <form id="trackForm">
+      <label for="customerName">Your Full Name</label>
+      <input
+        id="customerName"
+        type="text"
+        placeholder="Enter your name"
+        required
+        autocomplete="name"
+      >
+
+      <label for="phone">Phone Number</label>
+      <input
+        id="phone"
+        type="tel"
+        placeholder="09XXXXXXXX"
+        required
+        autocomplete="tel"
+      >
+
+      <button id="trackButton" type="submit">
+        CHECK MY PHOTO STATUS
+      </button>
+    </form>
+
+    <div id="message" role="status" aria-live="polite"></div>
+    <div id="results"></div>
+
+  </section>
+</main>
+
+<footer>
+  © 2026 TIBE PHOTO & VIDEO STUDIO. All rights reserved.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<script>
+  const form = document.getElementById("trackForm");
+  const message = document.getElementById("message");
+  const results = document.getElementById("results");
+  const button = document.getElementById("trackButton");
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function(c) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[c];
+    });
+  }
+
+  function statusText(status) {
+    const labels = {
+      pending: "Waiting for review",
+      reviewing: "Your photo is being reviewed",
+      processing: "Your photo is being processed",
+      in_progress: "Work in progress",
+      completed: "Your photo is ready",
+      cancelled: "Request cancelled"
+    };
+
+    return labels[status] || status;
+  }
+
+  function dateText(value) {
+    if (!value) return "Not available";
+
+    const date = new Date(value);
+
+    return date.toLocaleString();
+  }
+
+  form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    results.innerHTML = "";
+    message.textContent = "";
+
+    const name = document.getElementById("customerName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!name || !phone) {
+      message.textContent = "Please enter your name and phone number.";
+      return;
+    }
+
+    if (!window.supabaseClient) {
+      message.textContent =
+        "Connection error. Please refresh and try again.";
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "CHECKING...";
+    message.textContent = "Searching for your photo requests...";
+
+    try {
+      const { data, error } = await window.supabaseClient
+        .rpc("track_customer_photo_requests", {
+          p_phone: phone,
+          p_customer_name: name
+        });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        message.textContent =
+          "No request found. Please check your name and phone number.";
+        return;
+      }
+
+      message.textContent = "Your photo requests:";
+
+      results.innerHTML = data.map(function(item) {
+        const status = String(item.status || "").toLowerCase();
+
+        const statusClass =
+          status === "completed" ? "completed" :
+          status === "cancelled" ? "cancelled" : "";
+
+        return `
+          <div class="request">
+            <h3>${escapeHTML(item.service || "Photo Service")}</h3>
+
+            <p>
+              <strong>Status:</strong><br>
+              <span class="status ${statusClass}">
+                ${escapeHTML(statusText(status))}
+              </span>
+            </p>
+
+            <p>
+              <strong>Submitted:</strong><br>
+              ${escapeHTML(dateText(item.created_at))}
+            </p>
+          </div>
+        `;
+      }).join("");
+
+    } catch (error) {
+      console.error(error);
+      message.textContent =
+        "Something went wrong. Please try again later.";
+    } finally {
+      button.disabled = false;
+      button.textContent = "CHECK MY PHOTO STATUS";
+    }
+  });
+</script>
+
+</body>
+</html>
