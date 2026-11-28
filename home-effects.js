@@ -1,29 +1,24 @@
-
 document.addEventListener("DOMContentLoaded", () => {
-
-  // TIBE INTRO ANIMATION
+  // TIBE INTRO - unique class names prevent gallery conflicts
   const intro = document.createElement("div");
   intro.className = "tibe-site-intro";
   intro.innerHTML = `
-    <div class="intro-logo">T</div>
+    <div class="tibe-site-logo">T</div>
     <h1>TIBE</h1>
-    <p>PHOTO & VIDEO STUDIO</p>
+    <p>PHOTO &amp; VIDEO STUDIO</p>
     <span>CAPTURE • CREATE • PRESERVE</span>
   `;
   document.body.prepend(intro);
 
-  // TOP ANNOUNCEMENT / PHOTO SCROLLER
+  // TOP PHOTO TICKER
   const ticker = document.createElement("section");
   ticker.className = "tibe-ticker";
-  ticker.setAttribute("aria-label", "Latest studio photos and announcements");
+  ticker.setAttribute("aria-label", "TIBE latest photos");
   ticker.innerHTML = `
     <div class="ticker-label">TIBE UPDATES</div>
     <div class="ticker-window">
       <div class="ticker-track">
-        <span class="ticker-fallback">
-          Welcome to TIBE Photo & Video Studio •
-          New photos and studio updates •
-        </span>
+        <span class="ticker-fallback">Welcome to TIBE Photo &amp; Video Studio • Latest studio work •</span>
       </div>
     </div>
   `;
@@ -31,7 +26,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const header = document.querySelector(".topbar");
   if (header) header.after(ticker);
 
-  // LOAD PUBLISHED GALLERY PHOTOS
+  // PHOTO LIGHTBOX FOR TICKER
+  const lightbox = document.createElement("div");
+  lightbox.className = "tibe-ticker-lightbox";
+  lightbox.innerHTML = `
+    <button type="button" class="ticker-lightbox-close" aria-label="Close">×</button>
+    <img alt="TIBE Studio photo">
+    <p></p>
+  `;
+  document.body.appendChild(lightbox);
+
+  const lightboxImage = lightbox.querySelector("img");
+  const lightboxCaption = lightbox.querySelector("p");
+
+  function closePhoto() {
+    lightbox.classList.remove("open");
+    lightboxImage.removeAttribute("src");
+  }
+
+  function openPhoto(photo) {
+    lightboxImage.src = photo.image_url;
+    lightboxImage.alt = photo.title || "TIBE Studio";
+    lightboxCaption.textContent = photo.title || photo.category || "TIBE Studio";
+    lightbox.classList.add("open");
+  }
+
+  lightbox.querySelector(".ticker-lightbox-close")
+    .addEventListener("click", closePhoto);
+
+  lightbox.addEventListener("click", e => {
+    if (e.target === lightbox) closePhoto();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closePhoto();
+  });
+
+  // LOAD PHOTOS FROM SUPABASE
   async function loadTicker() {
     const track = ticker.querySelector(".ticker-track");
     const db = window.supabaseClient;
@@ -40,261 +71,278 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const { data, error } = await db
       .from("gallery")
-      .select("title, category, image_url")
+      .select("id,title,category,image_url")
       .eq("is_published", true)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(12);
 
-    if (error || !data || data.length === 0) return;
+    if (error) {
+      console.error("TIBE ticker error:", error);
+      return;
+    }
+
+    if (!data || !data.length) return;
 
     track.replaceChildren();
 
-    const makeItem = (photo) => {
-      const item = document.createElement("a");
+    function createItem(photo) {
+      const item = document.createElement("button");
+      item.type = "button";
       item.className = "ticker-item";
-      item.href = "#gallery";
+      item.setAttribute("aria-label", "View " + (photo.title || "photo"));
 
       const img = document.createElement("img");
       img.src = photo.image_url;
       img.alt = photo.title || "TIBE Studio";
       img.loading = "lazy";
 
-      const text = document.createElement("span");
-      text.textContent =
-        (photo.title || "TIBE Studio") +
-        " • " +
-        (photo.category || "Latest work");
+      const caption = document.createElement("span");
+      caption.textContent = (photo.title || "TIBE Studio") +
+        " • " + (photo.category || "Latest work");
 
-      item.append(img, text);
+      item.append(img, caption);
+      item.addEventListener("click", () => openPhoto(photo));
       return item;
-    };
+    }
 
-    data.forEach(photo => track.append(makeItem(photo)));
+    data.forEach(photo => track.appendChild(createItem(photo)));
+    data.forEach(photo => track.appendChild(createItem(photo)));
 
-    // Duplicate items for seamless scrolling
-    data.forEach(photo => track.append(makeItem(photo)));
+    if (data.length === 1) {
+      track.style.animation = "none";
+    }
   }
 
   loadTicker();
 
-  // SERVICE CARDS: OPEN BOOKING
-  const serviceMap = {
-    "Photography": "Photography Session",
-    "Video production": "Video Production",
-    "Photo editing": "AI Photo Editing",
-    "Passport photos": "Passport Photo",
-    "Birthday photos": "Birthday Photo Editing",
-    "Wedding coverage": "Wedding Photography"
-  };
-
-  document.querySelectorAll(".service-card").forEach(card => {
-    const heading = card.querySelector("h3");
-    const name = heading?.textContent.trim();
-    const service = serviceMap[name];
-
-    if (!service) return;
-
-    card.style.cursor = "pointer";
-    card.setAttribute("tabindex", "0");
-    card.setAttribute("role", "button");
-
-    function selectService() {
-      const select = document.getElementById("bookService");
-      const booking = document.getElementById("booking");
-
-      if (!select || !booking) return;
-
-      select.value = service;
-      booking.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    }
-
-    card.addEventListener("click", selectService);
-
-    card.addEventListener("keydown", event => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectService();
-      }
-    });
-  });
-
   // REMOVE INTRO AFTER ANIMATION
   setTimeout(() => {
-    intro.classList.add("intro-hidden");
-    setTimeout(() => intro.remove(), 900);
+    intro.classList.add("tibe-site-intro-hidden");
+    setTimeout(() => intro.remove(), 850);
   }, 1900);
-
 });
 
-// ANIMATION STYLES
-const animationStyle = document.createElement("style");
+// ALL STYLES
+const tibeStyle = document.createElement("style");
 
-animationStyle.textContent = `
-.tibe-intro {
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  background:#080808;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  color:#f5f0e7;
-  animation:introBackground 1.2s ease;
-}
+tibeStyle.textContent = `
+  .tibe-site-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #080808;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #f5f0e7;
+    animation: tibeSiteBackground 1.2s ease;
+  }
 
-.intro-logo {
-  width:75px;
-  height:75px;
-  border:2px solid #d6ad62;
-  color:#d6ad62;
-  display:grid;
-  place-items:center;
-  font:700 48px Georgia;
-  animation:logoReveal 1.1s ease both;
-}
+  .tibe-site-logo {
+    width: 75px;
+    height: 75px;
+    border: 2px solid #d6ad62;
+    color: #d6ad62;
+    display: grid;
+    place-items: center;
+    font: bold 48px Georgia;
+    animation: tibeSiteLogo 1.1s ease both;
+  }
 
-.tibe-intro h1 {
-  color:#d6ad62;
-  font:700 48px Georgia;
-  letter-spacing:12px;
-  margin:20px 0 5px;
-  animation:textReveal 1s .2s both;
-}
+  .tibe-site-intro h1 {
+    color: #d6ad62;
+    font: bold 48px Georgia;
+    letter-spacing: 12px;
+    margin: 20px 0 5px;
+    animation: tibeSiteText 1s .2s both;
+  }
 
-.tibe-intro p {
-  font-size:12px;
-  letter-spacing:5px;
-  margin:5px;
-}
+  .tibe-site-intro p {
+    font-size: 12px;
+    letter-spacing: 5px;
+    margin: 5px;
+  }
 
-.tibe-intro span {
-  color:#aaa39a;
-  font-size:9px;
-  letter-spacing:3px;
-  margin-top:30px;
-}
+  .tibe-site-intro span {
+    color: #aaa39a;
+    font-size: 9px;
+    letter-spacing: 3px;
+    margin-top: 30px;
+  }
 
-.intro-hidden {
-  opacity:0;
-  visibility:hidden;
-  transition:opacity .8s ease, visibility .8s;
-}
+  .tibe-site-intro-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .8s ease, visibility .8s;
+  }
 
-@keyframes logoReveal {
-  from {transform:scale(.5) rotate(-20deg);opacity:0}
-  to {transform:scale(1) rotate(0);opacity:1}
-}
+  @keyframes tibeSiteLogo {
+    from { transform: scale(.5) rotate(-20deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
+  }
 
-@keyframes textReveal {
-  from {opacity:0;letter-spacing:25px}
-  to {opacity:1;letter-spacing:12px}
-}
+  @keyframes tibeSiteText {
+    from { opacity: 0; letter-spacing: 25px; }
+    to { opacity: 1; letter-spacing: 12px; }
+  }
 
-@keyframes introBackground {
-  from {background:#17110a}
-  to {background:#080808}
-}
+  @keyframes tibeSiteBackground {
+    from { background: #17110a; }
+    to { background: #080808; }
+  }
 
-.tibe-ticker {
-  height:65px;
-  display:flex;
-  align-items:center;
-  overflow:hidden;
-  background:#15120d;
-  border-bottom:1px solid #594525;
-  position:relative;
-  z-index:5;
-}
+  /* TICKER */
+  .tibe-ticker {
+    height: 65px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: #15120d;
+    border-bottom: 1px solid #594525;
+    position: relative;
+    z-index: 5;
+  }
 
-.ticker-label {
-  flex-shrink:0;
-  height:100%;
-  display:flex;
-  align-items:center;
-  padding:0 18px;
-  background:#d6ad62;
-  color:#111;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:2px;
-}
+  .ticker-label {
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    background: #d6ad62;
+    color: #111;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+  }
 
-.ticker-window {
-  overflow:hidden;
-  flex:1;
-}
+  .ticker-window {
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+  }
 
-.ticker-track {
-  display:flex;
-  align-items:center;
-  width:max-content;
-  animation:tickerMove 38s linear infinite;
-}
+  .ticker-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: tibeTickerMove 38s linear infinite;
+  }
 
-.ticker-window:hover .ticker-track {
-  animation-play-state:paused;
-}
+  .ticker-window:hover .ticker-track {
+    animation-play-state: paused;
+  }
 
-.ticker-item {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:0 22px;
-  color:#f5f0e7;
-  text-decoration:none;
-  white-space:nowrap;
-  font-size:13px;
-  font-weight:600;
-}
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 22px;
+    border: 0;
+    background: transparent;
+    color: #f5f0e7;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
 
-.ticker-item img {
-  width:42px;
-  height:42px;
-  border-radius:5px;
-  object-fit:cover;
-  border:1px solid #d6ad62;
-}
+  .ticker-item img {
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #d6ad62;
+  }
 
-.ticker-fallback {
-  padding:20px;
-  color:#d6ad62;
-  white-space:nowrap;
-}
+  .ticker-fallback {
+    padding: 20px;
+    color: #d6ad62;
+    white-space: nowrap;
+  }
 
-@keyframes tickerMove {
-  from {transform:translateX(0)}
-  to {transform:translateX(-50%)}
-}
+  @keyframes tibeTickerMove {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
 
-.service-card {
-  transition:transform .25s ease,
-  border-color .25s ease,
-  box-shadow .25s ease;
-}
+  /* TICKER PHOTO VIEWER */
+  .tibe-ticker-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    background: #050505f2;
+    backdrop-filter: blur(12px);
+  }
 
-.service-card:hover,
-.service-card:focus-visible {
-  transform:translateY(-6px);
-  border-color:#d6ad62;
-  box-shadow:0 12px 30px #d6ad6220;
-  outline:none;
-}
+  .tibe-ticker-lightbox.open {
+    display: flex;
+    animation: tibeViewerFade .3s ease;
+  }
 
-@media(max-width:600px) {
-  .tibe-ticker {height:58px}
-  .ticker-label {font-size:9px;padding:0 10px}
-  .ticker-item {font-size:11px;padding:0 12px}
-  .ticker-item img {width:34px;height:34px}
-}
+  .tibe-ticker-lightbox img {
+    max-width: 94vw;
+    max-height: 78vh;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 1px solid #d6ad62;
+  }
 
-@media(prefers-reduced-motion:reduce) {
-  .ticker-track {animation:none}
-  .tibe-intro {animation:none}
-}
+  .tibe-ticker-lightbox p {
+    color: #d6ad62;
+    text-align: center;
+  }
+
+  .ticker-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #191510;
+    border: 1px solid #d6ad62;
+    color: #d6ad62;
+    font-size: 28px;
+    cursor: pointer;
+  }
+
+  @keyframes tibeViewerFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* SERVICE CARD DESIGN */
+  .service-card {
+    transition: transform .3s ease,
+      border-color .3s ease,
+      box-shadow .3s ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-6px);
+    border-color: #d6ad62;
+    box-shadow: 0 12px 30px #d6ad6220;
+  }
+
+  @media(max-width:600px) {
+    .tibe-ticker { height: 58px; }
+    .ticker-label { font-size: 9px; padding: 0 10px; }
+    .ticker-item { font-size: 11px; padding: 0 12px; }
+    .ticker-item img { width: 34px; height: 34px; }
+  }
+
+  @media(prefers-reduced-motion:reduce) {
+    .ticker-track { animation: none; }
+    .tibe-site-intro { animation: none; }
+  }
 `;
 
-document.head.append(animationStyle);
+document.head.appendChild(tibeStyle);
