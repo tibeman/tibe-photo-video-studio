@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // TIBE INTRO ANIMATION
   const intro = document.createElement("div");
-  intro.className = "tibe-intro";
+  intro.className = "tibe-site-intro";
   intro.innerHTML = `
     <div class="intro-logo">T</div>
     <h1>TIBE</h1>
