@@ -1,77 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#090909">
+<meta name="description" content="TIBE Photo & Video Studio — photography, video production and professional photo editing.">
 <title>TIBE PHOTO & VIDEO STUDIO</title>
 <link rel="stylesheet" href="style.css">
+<style>
+:root{--gold:#d6ad62;--cream:#f5f0e7;--muted:#aaa39a;--panel:#151515}
+html{scroll-behavior:smooth;scroll-padding-top:100px}
+.topbar{gap:20px;flex-wrap:wrap}
+nav{flex-wrap:wrap}
+.hero{gap:30px}
+.section-head{max-width:720px;margin-left:auto;margin-right:auto}
+.booking-section{background:linear-gradient(180deg,#0b0b0b,#12100d)}
+.booking-panel{max-width:850px;margin:auto;background:#151515;border:1px solid #403522;border-radius:12px;padding:30px;box-shadow:0 18px 50px #0005}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.field label{display:block;margin:0 0 8px;font-size:13px;font-weight:700;color:#e9dfcf}
+.field input,.field select,.field textarea{width:100%;padding:14px 15px;border:1px solid #514737;border-radius:6px;background:#0d0d0d;color:#fff;font-size:15px;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 2px #d6ad6220}
+.field textarea{resize:vertical}.field-wide{grid-column:1/-1}
+.submit-btn{width:100%;margin-top:22px;min-height:52px}
+.status{font-size:13px;color:var(--gold);min-height:18px;line-height:1.6}
+.quick-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:28px}
+.about-section{display:grid;grid-template-columns:1fr 1fr;gap:45px;align-items:center;background:#101010}
+.about-visual{min-height:270px;border:1px solid #4a3a24;border-radius:12px;background:radial-gradient(circle at center,#47351d,#17130e 55%,#0b0b0b);display:grid;place-items:center}
+.about-mark{font:700 clamp(42px,7vw,75px) Georgia;color:var(--gold);letter-spacing:8px;text-align:center}
+.about-mark span{display:block;font:600 11px Arial;letter-spacing:6px;margin-top:10px;color:#c6b18b}
+.customer-section{background:#101010}
+.customer-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1000px;margin:auto}
+.customer-card{background:#151515;border:1px solid #332c22;padding:25px;border-radius:9px}
+.customer-card>span{font-size:28px}.customer-card h3{font-size:17px}
+.customer-card p{color:var(--muted);font-size:13px;line-height:1.75}
+.customer-card .btn{width:100%;margin-top:15px}
+@media(max-width:760px){.form-grid,.about-section,.customer-cards{grid-template-columns:1fr}.field-wide{grid-column:auto}.booking-panel{padding:20px 16px}.about-visual{min-height:220px}.quick-links .btn{flex:1}}
+</style>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#"><span class="brand-mark">T</span><span>TIBE <small>PHOTO & VIDEO STUDIO</small></span></a>
-  <nav><a href="#services">Services</a><a href="#gallery">Gallery</a><a href="#passport">Passport Maker</a><a href="#contact">Contact</a></nav>
+<a class="brand" href="#home"><span class="brand-mark">T</span><span>TIBE <small>PHOTO & VIDEO STUDIO</small></span></a>
+<nav aria-label="Main navigation">
+<a href="#home">Home</a><a href="#services">Services</a><a href="#booking">Book</a><a href="#gallery">Gallery</a><a href="#about">About</a><a href="#contact">Contact</a>
+</nav>
 </header>
 <main>
-<section class="hero">
-  <div class="hero-copy">
-    <p class="eyebrow">CAPTURE • CREATE • PRESERVE</p>
-    <h1>Your moments.<br><span>Our creativity.</span></h1>
-    <p class="lead">Professional photography, video production and creative photo editing — made with care.</p>
-    <div class="hero-actions"><a class="btn gold" href="#contact">Book a session</a><a class="btn outline" href="#services">Explore services</a></div>
-  </div>
-  <div class="hero-art"><div class="lens"><div class="lens-inner">TIBE</div></div><div class="art-caption">STORIES IN EVERY FRAME</div></div>
+<section class="hero" id="home">
+<div class="hero-copy">
+<p class="eyebrow">CAPTURE • CREATE • PRESERVE</p>
+<h1>Your moments.<br><span>Our creativity.</span></h1>
+<p class="lead">Professional photography, video production and creative photo editing — made with care.</p>
+<div class="hero-actions"><a class="btn gold" href="#booking">Book a session</a><a class="btn outline" href="#services">Explore services</a></div>
+<p class="muted">Photography · Video · Photo Editing</p>
+</div>
+<div class="hero-art"><div class="lens"><div class="lens-inner">TIBE</div></div><div class="art-caption">STORIES IN EVERY FRAME</div></div>
 </section>
+
 <section id="services" class="section">
-  <div class="section-head"><p class="eyebrow">WHAT WE DO</p><h2>Studio services</h2></div>
-  <div class="cards">
-    <article class="service-card"><div class="service-icon">📸</div><h3>Photography</h3><p>Portraits, events, family sessions and memorable moments.</p></article>
-    <article class="service-card"><div class="service-icon">🎬</div><h3>Video production</h3><p>Event coverage, short videos and creative storytelling.</p></article>
-    <article class="service-card"><div class="service-icon">✨</div><h3>Photo editing</h3><p>Retouching, background cleanup, enhancement and restoration.</p></article>
-    <article class="service-card"><div class="service-icon">🪪</div><h3>Passport photos</h3><p>Prepare a clean 3 × 4 cm print layout in your browser.</p></article>
-  </div>
+<div class="section-head"><p class="eyebrow">WHAT WE DO</p><h2>Studio services</h2><p class="muted">Choose the service you need and send us your request.</p></div>
+<div class="cards">
+<article class="service-card"><div class="service-icon">📸</div><h3>Photography</h3><p>Portraits, events, family sessions and memorable moments.</p></article>
+<article class="service-card"><div class="service-icon">🎬</div><h3>Video production</h3><p>Event coverage, short videos and creative storytelling.</p></article>
+<article class="service-card"><div class="service-icon">✨</div><h3>Photo editing</h3><p>Retouching, background cleanup, enhancement and restoration.</p></article>
+<article class="service-card"><div class="service-icon">🪪</div><h3>Passport photos</h3><p>Prepare a clean 3 × 4 cm print layout in your browser.</p></article>
+<article class="service-card"><div class="service-icon">🎂</div><h3>Birthday photos</h3><p>Creative birthday portraits and special occasion designs.</p></article>
+<article class="service-card"><div class="service-icon">💍</div><h3>Wedding coverage</h3><p>Photography and video coverage for your special day.</p></article>
+</div>
 </section>
 
+<section id="about" class="section about-section">
+<div class="about-visual"><div class="about-mark">TIBE<span>PHOTO & VIDEO STUDIO</span></div></div>
+<div><p class="eyebrow">ABOUT OUR STUDIO</p><h2>Every picture tells a story.</h2><p class="muted">TIBE PHOTO & VIDEO STUDIO brings photography, video production and photo editing together in one place. Send your photo request online, book a studio session and follow the progress of your work.</p><a href="#booking">Start with a booking →</a></div>
 </section>
+
+<section id="booking" class="section booking-section">
+<div class="section-head"><p class="eyebrow">RESERVE YOUR SESSION</p><h2>Book an appointment</h2><p class="muted">Choose a service, date and time. Our studio will review your booking request.</p></div>
+<div class="booking-panel">
+<form id="bookingForm">
+<div class="form-grid">
+<div class="field"><label for="bookName">Full name *</label><input id="bookName" required maxlength="100" autocomplete="name" placeholder="Enter your full name"></div>
+<div class="field"><label for="bookPhone">Phone number *</label><input id="bookPhone" type="tel" required maxlength="30" autocomplete="tel" placeholder="09XXXXXXXX"></div>
+<div class="field"><label for="bookService">Choose service *</label><select id="bookService" required><option value="">Select a service</option><option>Photography Session</option><option>Wedding Photography</option><option>Event Photography</option><option>AI Photo Editing</option><option>Birthday Photo Editing</option><option>Background Change</option><option>Passport Photo</option><option>Video Production</option><option>Other</option></select></div>
+<div class="field"><label for="bookDate">Preferred date *</label><input id="bookDate" type="date" required></div>
+<div class="field"><label for="bookTime">Preferred time *</label><input id="bookTime" type="time" required></div>
+<div class="field field-wide"><label for="bookNote">Additional instructions</label><textarea id="bookNote" rows="4" maxlength="1000" placeholder="Tell us what you need..."></textarea></div>
+</div>
+<button class="btn gold submit-btn" type="submit" id="bookingBtn">SEND BOOKING REQUEST</button>
+<p id="bookingStatus" class="status" role="status" aria-live="polite"></p>
+</form>
+</div>
+<div class="quick-links"><a class="btn outline" href="customer-upload.html">SEND YOUR PHOTO</a><a class="btn outline" href="customer-status.html">TRACK YOUR PHOTO</a></div>
+</section>
+
 <section id="gallery" class="section gallery-section">
-  <div class="section-head">
-    <p class="eyebrow">OUR CREATIVE WORLD</p>
-    <h2>Gallery</h2>
-    <p class="muted">Our latest photography and creative work</p>
-  </div>
-
-  <div class="gallery" id="galleryGrid">
-    <p class="muted">Loading gallery...</p>
-  </div>
+<div class="section-head"><p class="eyebrow">OUR CREATIVE WORLD</p><h2>Photo gallery</h2><p class="muted">Selected photography and creative work from TIBE Studio.</p></div>
+<div class="gallery" id="galleryGrid"><p class="muted">Loading gallery...</p></div>
 </section>
 
 <section id="passport" class="section passport-section">
-  <div class="section-head"><p class="eyebrow">FREE BROWSER TOOL</p><h2>3 × 4 cm Passport Photo Maker</h2><p class="muted">Your photo is processed on this device; it is not uploaded by this tool.</p></div>
-  <div class="passport-grid">
-    <div class="tool-panel">
-      <label class="upload-label" for="photoInput">Choose a photo</label>
-      <input id="photoInput" type="file" accept="image/*">
-      <p class="hint">Tip: For a clean white background, first remove the background using <a href="https://rmbg.me/" target="_blank" rel="noopener">RMBG.me</a>, download the transparent PNG, then upload it here.</p>
-      <label for="zoom">Zoom <span id="zoomValue">100%</span></label><input id="zoom" type="range" min="50" max="200" value="100">
-      <label for="horizontal">Move left / right</label><input id="horizontal" type="range" min="-100" max="100" value="0">
-      <label for="vertical">Move up / down</label><input id="vertical" type="range" min="-100" max="100" value="0">
-      <div class="tool-actions"><button class="btn gold" id="downloadBtn" disabled>Download PNG</button><button class="btn outline dark" id="resetBtn" type="button">Reset crop</button></div>
-      <p class="hint">Output: 354 × 472 pixels. Print at 300 DPI for approximately 3 × 4 cm. Check your destination's official photo requirements before printing.</p>
-      <p id="toolStatus" class="status" aria-live="polite">Choose an image to begin.</p>
-    </div>
-    <div class="preview-panel"><div class="preview-title">LIVE PREVIEW <span>3:4</span></div><div class="preview-frame"><canvas id="passportCanvas" width="354" height="472"></canvas></div></div>
-  </div>
+<div class="section-head"><p class="eyebrow">FREE BROWSER TOOL</p><h2>3 × 4 cm Passport Photo Maker</h2><p class="muted">Your photo is processed on this device; this tool does not upload it.</p></div>
+<div class="passport-grid">
+<div class="tool-panel">
+<label class="upload-label" for="photoInput">Choose a photo</label><input id="photoInput" type="file" accept="image/*">
+<p class="hint">For a clean white background, remove the background using <a href="https://rmbg.me/" target="_blank" rel="noopener">RMBG.me</a>, then upload the transparent PNG here.</p>
+<label for="zoom">Zoom <span id="zoomValue">100%</span></label><input id="zoom" type="range" min="50" max="200" value="100">
+<label for="horizontal">Move left / right</label><input id="horizontal" type="range" min="-100" max="100" value="0">
+<label for="vertical">Move up / down</label><input id="vertical" type="range" min="-100" max="100" value="0">
+<div class="tool-actions"><button class="btn gold" id="downloadBtn" disabled type="button">Download PNG</button><button class="btn outline dark" id="resetBtn" type="button">Reset crop</button></div>
+<p class="hint">Output: 354 × 472 pixels. Print at 300 DPI for approximately 3 × 4 cm. Check official photo requirements before printing.</p>
+<p id="toolStatus" class="status" aria-live="polite">Choose an image to begin.</p>
+</div>
+<div class="preview-panel"><div class="preview-title">LIVE PREVIEW <span>3:4</span></div><div class="preview-frame"><canvas id="passportCanvas" width="354" height="472"></canvas></div></div>
+</div>
 </section>
+
+<section id="customer" class="section customer-section">
+<div class="section-head"><p class="eyebrow">ONLINE CUSTOMER SERVICE</p><h2>Your requests, in one place</h2><p class="muted">Send your photo for editing or check the progress of a request you already submitted.</p></div>
+<div class="customer-cards">
+<article class="customer-card"><span>📤</span><h3>Send a photo</h3><p>Upload your photo, choose the service and describe the changes you need.</p><a class="btn gold" href="customer-upload.html">SEND PHOTO</a></article>
+<article class="customer-card"><span>🔎</span><h3>Track your request</h3><p>Check whether your photo request is waiting, being processed or completed.</p><a class="btn outline" href="customer-status.html">CHECK STATUS</a></article>
+<article class="customer-card"><span>🗓️</span><h3>Book a session</h3><p>Choose a preferred date and time for a studio appointment.</p><a class="btn outline" href="#booking">BOOK NOW</a></article>
+</div>
+</section>
+
 <section id="contact" class="section contact-section">
-  <div><p class="eyebrow">LET'S CREATE SOMETHING</p><h2>Contact the studio</h2><p class="muted">For bookings, pricing and custom requests, contact us directly.</p></div>
-  <div class="contact-card"><p><b>WhatsApp / Phone</b><br><a href="https://wa.me/251900000000">Add your studio number</a></p><p><b>Location</b><br>Add your studio address</p><p><b>Social media</b><br>Add your Facebook, Instagram or TikTok links</p></div>
+<div><p class="eyebrow">LET'S CREATE SOMETHING</p><h2>Contact the studio</h2><p class="muted">For bookings, pricing and custom requests, send us a message by email or use the online request forms.</p><a class="btn gold" href="mailto:tibeman5171@gmail.com">EMAIL THE STUDIO</a></div>
+<div class="contact-card"><p><b>Studio</b><br>TIBE PHOTO & VIDEO STUDIO</p><p><b>Email</b><br><a href="mailto:tibeman5171@gmail.com">tibeman5171@gmail.com</a></p><p><b>Online services</b><br><a href="customer-upload.html">Send a photo</a> · <a href="customer-status.html">Track a request</a></p></div>
 </section>
 </main>
 <footer>© <span id="year"></span> TIBE PHOTO & VIDEO STUDIO. All rights reserved.</footer>
-
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="gallery.js"></script>
 <script src="script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("bookingForm");
+  const statusBox = document.getElementById("bookingStatus");
+  const button = document.getElementById("bookingBtn");
+  const dateInput = document.getElementById("bookDate");
+  const now = new Date();
+  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0,10);
+  dateInput.min = today;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    statusBox.textContent = "";
+    const db = window.supabaseClient;
+    if (!db) { statusBox.textContent = "Connection error. Refresh the page and try again."; return; }
+
+    const customer_name = document.getElementById("bookName").value.trim();
+    const phone = document.getElementById("bookPhone").value.trim();
+    const service = document.getElementById("bookService").value;
+    const booking_date = dateInput.value;
+    const booking_time = document.getElementById("bookTime").value;
+    const note = document.getElementById("bookNote").value.trim();
+
+    if (!customer_name || !phone || !service || !booking_date || !booking_time) {
+      statusBox.textContent = "Please complete all required fields."; return;
+    }
+    if (booking_date < today) { statusBox.textContent = "Please choose today or a future date."; return; }
+
+    button.disabled = true;
+    button.textContent = "SENDING...";
+    statusBox.textContent = "Sending your booking request...";
+    try {
+      const { error } = await db.from("bookings").insert([{
+        customer_name, phone, service, booking_date, booking_time, note, status: "pending"
+      }]);
+      if (error) throw error;
+      statusBox.textContent = "Your booking request was sent successfully. The studio will contact you to confirm it.";
+      form.reset();
+      dateInput.min = today;
+    } catch (error) {
+      console.error("Booking request error:", error);
+      statusBox.textContent = "We could not send your booking. Please try again or contact the studio.";
+    } finally {
+      button.disabled = false;
+      button.textContent = "SEND BOOKING REQUEST";
+    }
+  });
+});
+</script>
 </body>
 </html>
